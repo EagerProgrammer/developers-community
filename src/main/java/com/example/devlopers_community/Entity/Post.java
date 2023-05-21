@@ -1,5 +1,6 @@
 package com.example.devlopers_community.Entity;
 
+import com.example.devlopers_community.BaseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,13 +9,15 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @DynamicInsert
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long post_id;
@@ -29,11 +32,17 @@ public class Post {
     @Column
     private String image;
     @Column
+    private String writer;
+    @Column
     @ColumnDefault("0")
     private Long likes;
     @Column
     @ColumnDefault("0")
     private Long views;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy("created_at asc")
+    private List<Comment> commentList;
 
     public void updatePost(String type, String title, String content, Long views, Long likes){
         this.type = type;

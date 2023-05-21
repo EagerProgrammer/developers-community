@@ -6,9 +6,11 @@ import lombok.Data;
 @Data
 @Builder
 public class updateRequsetDTO {
+    private Long Id;
     private String type;
     private String title;
     private String content;
     private Long views;
     private Long likes;
 }
+;

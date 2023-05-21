@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(value = {AuditingEntityListener.class})
 @Getter
 @Setter
 @MappedSuperclass
-public class BaseEntity {
+public abstract class BaseEntity {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime created_at;
     @LastModifiedDate
     private LocalDateTime updated_at;
+
+    @Column
+    private LocalDateTime deleted_at;
 
 }

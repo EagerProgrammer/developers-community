@@ -5,8 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 public interface PostRepository extends JpaRepository <Post, Long>{
-    @Query("select p from Post p where p.title = :tit")
-    Post findByTitle(@Param("tit") String title);
+//    public Post findByPost_id(Long Id);
+
+    @Query("SELECT p from Post p join Fetch p.commentList order by p.created_at desc limit 50")
+    public List<Post> getPost();
 }
