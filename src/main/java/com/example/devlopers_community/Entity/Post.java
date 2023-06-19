@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @DynamicInsert
+@Where(clause = "deleted_at is null")
+@SQLDelete(sql = "update post set deleted_at= CURRENT_TIME where post_id=?")
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

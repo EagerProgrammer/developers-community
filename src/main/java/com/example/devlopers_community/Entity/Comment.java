@@ -25,8 +25,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public void comment_update(Long comment_id, String writer, String content){
-        this.comment_id = comment_id;
+    public void comment_update(String writer, String content){
         this.content = content;
         this.writer = writer;
 }

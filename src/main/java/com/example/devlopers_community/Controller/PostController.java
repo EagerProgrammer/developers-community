@@ -1,9 +1,8 @@
 package com.example.devlopers_community.Controller;
 
-import com.example.devlopers_community.DTO.RegisterCommentDTO;
-import com.example.devlopers_community.DTO.RegisterRequestDTO;
+import com.example.devlopers_community.DTO.*;
+import com.example.devlopers_community.DTO.Response.DetailPostResponse;
 import com.example.devlopers_community.DTO.Response.PostResponse;
-import com.example.devlopers_community.DTO.updateRequsetDTO;
 import com.example.devlopers_community.Service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -37,5 +36,19 @@ public class PostController {
         postService.RegisterComment(registerCommentDTO);
         return ResponseEntity.ok("Success");
     }
-
+    @PostMapping("/comment/update")
+    public ResponseEntity CommentUpdate(@RequestBody UpdateCommentRequestDTO updateCommentRequestDTO){
+        postService.UpdateComment(updateCommentRequestDTO);
+        return ResponseEntity.ok("Success");
+    }
+    @DeleteMapping("/post/delete")
+    public ResponseEntity DeletePost(@RequestBody DeleteRequest deleteRequest){
+        postService.DeletePost(deleteRequest);
+        return ResponseEntity.ok("Success");
+    }
+    @GetMapping("/post/detail")
+    public  ResponseEntity DetailPost(@RequestParam Long PostNum, Long memberId){
+       DetailPostResponse detailPostResponse =  postService.DetailPost(PostNum, memberId);
+       return ResponseEntity.ok(detailPostResponse);
+    }
 }

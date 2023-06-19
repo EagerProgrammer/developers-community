@@ -1,23 +1,20 @@
 package com.example.devlopers_community.Service;
 
-import com.example.devlopers_community.DTO.RegisterCommentDTO;
-import com.example.devlopers_community.DTO.RegisterRequestDTO;
+import com.example.devlopers_community.DTO.*;
 import com.example.devlopers_community.DTO.Response.CommentListDTO;
+import com.example.devlopers_community.DTO.Response.DetailPostResponse;
 import com.example.devlopers_community.DTO.Response.ListPostResponse;
 import com.example.devlopers_community.DTO.Response.PostResponse;
-import com.example.devlopers_community.DTO.updateRequsetDTO;
 import com.example.devlopers_community.Entity.Comment;
 import com.example.devlopers_community.Entity.Post;
 import com.example.devlopers_community.Repository.CommentRepository;
 import com.example.devlopers_community.Repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +37,9 @@ public class PostService implements ServiceImp{
         , updateRequsetDTO.getContent(), updateRequsetDTO.getViews(), updateRequsetDTO.getLikes());
     }
 
-//    @Transactional
+    @Transactional
     public PostResponse getPost() {
+
         List<Post> posts = postRepository.getPost();
         List<ListPostResponse> listPostResponse = posts.stream().map(i->{
             ListPostResponse listPostResponse1= ListPostResponse.builder()
@@ -60,8 +58,6 @@ public class PostService implements ServiceImp{
                     .build();
             return listPostResponse1;
         }).collect(Collectors.toList());
-
-
         PostResponse postResponse = PostResponse.builder().data(listPostResponse).build();
         return postResponse;
     }
@@ -74,6 +70,37 @@ public class PostService implements ServiceImp{
                 .content(registerCommentDTO.getContent())
                 .build();
         commentRepository.save(comment);
+    }
+    @Transactional
+    public void UpdateComment(UpdateCommentRequestDTO updateCommentRequestDTO){
+        Comment comment = commentRepository.findById(updateCommentRequestDTO.getComment_id()).orElseThrow(()->new NullPointerException());
+        comment.comment_update(updateCommentRequestDTO.getContent(), updateCommentRequestDTO.getWriter());
+    }
+    @Transactional
+    public void DeletePost(DeleteRequest deleteRequest){
+//        Post post = postRepository.findById(deleteRequest.getPost_id()).orElseThrow(null);
+//        postRepository.delete(post);
+      postRepository.deleteById(deleteRequest.getPost_id());
+
+    }
+    @Transactional
+    @Cacheable(cacheNames = "posts", key = "#memberId")
+    public DetailPostResponse DetailPost(Long post_id, Long memberId){
+        Post post = postRepository.findById(post_id).orElseThrow(null);
+        DetailPostResponse detailPostResponse = DetailPostResponse.builder().
+                title(post.getTitle()).
+                content(post.getContent()).
+                writer(post.getWriter()).
+                image(post.getImage()).
+                hashTag(post.getHashTag()).
+                post_id(post.getPost_id()).
+                comment(post.getCommentList().stream().map(x -> {
+                    CommentListDTO commentListDTO = CommentListDTO.builder().
+                            writer(x.getWriter()).content(x.getContent()).build();
+                    return commentListDTO;
+                }).collect(Collectors.toList())).
+                build();
+        return detailPostResponse;
     }
 }
 
